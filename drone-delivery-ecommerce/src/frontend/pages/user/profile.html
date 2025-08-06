@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ Sơ Người Dùng</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/products.css">
+    <link rel="stylesheet" href="../../css/cart.css">
+</head>
+<body>
+    <header>
+        <h1>Hồ Sơ Người Dùng</h1>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Trang chính</a></li>
+                <li><a href="../products.html">Sản phẩm</a></li>
+                <li><a href="../drones.html">Drone</a></li>
+                <li><a href="../user/orders.html">Đơn hàng</a></li>
+                <li><a href="../login.html">Đăng nhập</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="user-profile">
+            <h2>Thông tin cá nhân</h2>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Số điện thoại:</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Địa chỉ:</label>
+                    <input type="text" id="address" name="address" required>
+                </div>
+                <button type="submit">Cập nhật thông tin</button>
+            </form>
+            <div id="updateMessage"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 Hệ thống quản lý Drone. Tất cả quyền được bảo lưu.</p>
+    </footer>
+    <script src="../../js/auth.js"></script>
+    <script>
+        // Fetch user profile data and populate the form
+        async function fetchUserProfile() {
+            // Fetch user data from the backend
+            const response = await fetch('/api/users/profile');
+            const userData = await response.json();
+            document.getElementById('username').value = userData.username;
+            document.getElementById('email').value = userData.email;
+            document.getElementById('phone').value = userData.phone;
+            document.getElementById('address').value = userData.address;
+        }
+
+        // Update user profile
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const updatedData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+            };
+
+            const response = await fetch('/api/users/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedData),
+            });
+
+            const messageDiv = document.getElementById('updateMessage');
+            if (response.ok) {
+                messageDiv.textContent = 'Cập nhật thành công!';
+                messageDiv.style.color = 'green';
+            } else {
+                messageDiv.textContent = 'Cập nhật thất bại!';
+                messageDiv.style.color = 'red';
+            }
+        });
+
+        // Call fetchUserProfile on page load
+        window.onload = fetchUserProfile;
+    </script>
+</body>
+</html>
