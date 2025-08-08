@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DroneShop - Giao hàng bằng Drone</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <!-- Leaflet Routing Machine CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-drone"></i>
+                <span>DroneShop</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="#" onclick="showPage('home')" class="nav-link active" data-page="home">Trang chủ</a></li>
+                    <li><a href="#" onclick="showPage('products')" class="nav-link" data-page="products">Sản phẩm</a></li>
+                    <li><a href="#" onclick="showPage('drones')" class="nav-link" data-page="drones">Drone</a></li>
+                </ul>
+            </nav>
+            
+            <div class="nav-auth" id="authButtons">
+                <button class="btn-login" onclick="showLoginModal()">
+                    <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                </button>
+                <button class="btn-register" onclick="showRegisterModal()">
+                    <i class="fas fa-user-plus"></i> Đăng ký
+                </button>
+            </div>
+            
+            <div class="nav-user-menu" id="userDropdown" style="display: none;">
+                <div class="dropdown">
+                    <a href="#" class="dropbtn">
+                        <i class="fas fa-user"></i> <span id="userNameNav">Tài khoản</span> <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="showPage('profile')"><i class="fas fa-user"></i> Thông tin cá nhân</a>
+                        <a href="#" onclick="showPage('orders')"><i class="fas fa-shopping-bag"></i> Đơn hàng của tôi</a>
+                        <a href="#" id="adminLink" onclick="showPage('admin')" style="display: none;"><i class="fas fa-cog"></i> Quản trị</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nav-icons">
+                <i class="fas fa-search"></i>
+                <div class="cart-icon" onclick="showPage('cart')">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </div>
+            </div>
+            
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="userName">Xin chào, User!</span>
+                <button onclick="logout()" class="btn-logout">Đăng xuất</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <div id="mainContent">
+        <!-- Home Page Content -->
+        <div id="homePage" class="page-content" style="display: block;">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Giao hàng siêu tốc bằng Drone</h1>
+                    <p>Trải nghiệm mua sắm mới với công nghệ giao hàng drone hiện đại. Nhanh chóng, an toàn và tiện lợi.</p>
+                    <div class="hero-buttons">
+                        <a href="#" class="btn-primary" onclick="showPage('products')">Mua sắm ngay</a>
+                        <a href="#" class="btn-secondary" onclick="showPage('drones')">Xem Drone</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <i class="fas fa-drone hero-drone"></i>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="features">
+                <div class="container">
+                    <h2>Tại sao chọn DroneShop?</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <i class="fas fa-rocket"></i>
+                            <h3>Giao hàng siêu tốc</h3>
+                            <p>Giao hàng trong vòng 30 phút với công nghệ drone hiện đại nhất</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>An toàn tuyệt đối</h3>
+                            <p>Hệ thống bảo mật và giám sát 24/7 đảm bảo hàng hóa an toàn</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <h3>Theo dõi realtime</h3>
+                            <p>Theo dõi vị trí đơn hàng theo thời gian thực trên bản đồ</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Products -->
+            <section class="featured-products">
+                <div class="container">
+                    <h2>Sản phẩm nổi bật</h2>
+                    <div class="products-grid" id="productGrid">
+                        <!-- Products will be loaded here -->
+                    </div>
+                    <div class="view-all">
+                        <a href="#" class="btn-primary" onclick="showPage('products')">Xem tất cả sản phẩm</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Products Page Content -->
+        <div id="productsPage" class="page-content" style="display: none;">
+            <div class="compact-page-wrapper">
+                <div class="compact-container">
+                    <div class="compact-header">
+                        <h1 class="compact-title">Sản phẩm</h1>
+                        <p class="compact-subtitle">Danh mục sản phẩm đa dạng</p>
+                    </div>
+                    
+                    <div class="compact-filters">
+                        <button onclick="filterProducts('all')" class="compact-filter-btn active">Tất cả</button>
+                        <button onclick="filterProducts('electronics')" class="compact-filter-btn">Điện tử</button>
+                        <button onclick="filterProducts('accessories')" class="compact-filter-btn">Phụ kiện</button>
+                        <button onclick="filterProducts('camera')" class="compact-filter-btn">Camera</button>
+                    </div>
+                    
+                    <div class="compact-products-grid" id="allProductsGrid">
+                        <!-- Products will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Drones Page Content -->
+        <div id="dronesPage" class="page-content" style="display: none;">
+            <div class="compact-page-wrapper">
+                <div class="compact-container">
+                    <div class="compact-header">
+                        <h1 class="compact-title">Đội bay Drone</h1>
+                        <p class="compact-subtitle">Đội bay drone hiện đại phục vụ giao hàng</p>
+                    </div>
+                    
+                    <div class="compact-drones-grid" id="dronesGrid">
+                        <!-- Drones will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Cart Page Content -->
+        <div id="cartPage" class="page-content" style="display: none;">
+            <section class="cart-section">
+                <div class="container">
+                    <h2>Giỏ hàng của bạn</h2>
+                    <div class="cart-content">
+                        <div class="cart-items" id="cartItems">
+                            <!-- Cart items will be loaded here -->
+                        </div>
+                        <div class="cart-summary" id="cartSummary">
+                            <h3>Tổng cộng</h3>
+                            <div class="total-amount">
+                                <span id="totalAmount">0 ₫</span>
+                            </div>
+                            <button class="btn-primary btn-checkout" onclick="proceedToCheckout()">
+                                <i class="fas fa-credit-card"></i> Thanh toán
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Checkout Page Content -->
+        <div id="checkoutPage" class="page-content" style="display: none;">
+            <section class="checkout-section">
+                <div class="container">
+                    <h2>Thanh toán</h2>
+                    <div class="checkout-content">
+                        <div class="checkout-form">
+                            <form id="checkoutForm" onsubmit="processCheckout(event)">
+                                <div class="form-section">
+                                    <h3>Thông tin khách hàng</h3>
+                                    <div class="form-group">
+                                        <label for="customerName">Họ và tên *</label>
+                                        <input type="text" id="customerName" name="customerName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="customerPhone">Số điện thoại *</label>
+                                        <input type="tel" id="customerPhone" name="customerPhone" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="customerEmail">Email</label>
+                                        <input type="email" id="customerEmail" name="customerEmail">
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <h3>Thông tin giao hàng</h3>
+                                    <div class="form-group">
+                                        <label for="deliveryAddress">Địa chỉ giao hàng *</label>
+                                        <input type="text" id="deliveryAddress" name="deliveryAddress" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="deliveryCity">Tỉnh/Thành phố *</label>
+                                        <select id="deliveryCity" name="deliveryCity" required>
+                                            <option value="">Chọn tỉnh/thành phố</option>
+                                            <option value="ho-chi-minh">TP. Hồ Chí Minh</option>
+                                            <option value="ha-noi">Hà Nội</option>
+                                            <option value="da-nang">Đà Nẵng</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="deliveryNotes">Ghi chú giao hàng</label>
+                                        <textarea id="deliveryNotes" name="deliveryNotes" rows="3"></textarea>
+                                    </div>
+                                    
+                                    <!-- Map for delivery location selection -->
+                                    <div class="form-group">
+                                        <label for="deliveryLocationMap">Chọn vị trí giao hàng trên bản đồ *</label>
+                                        <div class="delivery-location-container">
+                                            <div class="delivery-coords-display">
+                                                <div class="coords-info">
+                                                    <span>📍 Tọa độ: </span>
+                                                    <span id="selectedCoords">Chưa chọn vị trí</span>
+                                                    <button type="button" class="btn-clear-location" onclick="clearDeliveryLocation()" style="display: none;">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="location-actions">
+                                                    <button type="button" class="btn-secondary btn-use-current" onclick="useCurrentLocation()">
+                                                        <i class="fas fa-location-arrow"></i> Vị trí hiện tại
+                                                    </button>
+                                                    <button type="button" class="btn-secondary btn-search-address" onclick="searchAddressOnMap()">
+                                                        <i class="fas fa-search"></i> Tìm địa chỉ
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="delivery-map-container">
+                                                <div id="deliveryLocationMap" style="height: 300px; width: 100%; border: 1px solid #ddd; border-radius: 8px;"></div>
+                                            </div>
+                                            <div class="map-instructions">
+                                                <small><i class="fas fa-info-circle"></i> Click trên bản đồ để chọn vị trí giao hàng chính xác. Drone sẽ bay đến điểm này.</small>
+                                            </div>
+                                            <!-- Hidden inputs for coordinates -->
+                                            <input type="hidden" id="deliveryLat" name="deliveryLat">
+                                            <input type="hidden" id="deliveryLng" name="deliveryLng">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <h3>Phương thức thanh toán</h3>
+                                    <div class="payment-methods">
+                                        <label class="payment-method">
+                                            <input type="radio" name="paymentMethod" value="cod" checked>
+                                            <span class="payment-option">
+                                                <i class="fas fa-money-bill-wave"></i>
+                                                Thanh toán khi nhận hàng (COD)
+                                            </span>
+                                        </label>
+                                        <label class="payment-method">
+                                            <input type="radio" name="paymentMethod" value="banking">
+                                            <span class="payment-option">
+                                                <i class="fas fa-university"></i>
+                                                Chuyển khoản ngân hàng
+                                            </span>
+                                        </label>
+                                        <label class="payment-method">
+                                            <input type="radio" name="paymentMethod" value="momo">
+                                            <span class="payment-option">
+                                                <i class="fas fa-mobile-alt"></i>
+                                                Ví MoMo
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn-primary btn-place-order">
+                                    <i class="fas fa-check"></i> Đặt hàng
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="checkout-summary">
+                            <h3>Đơn hàng của bạn</h3>
+                            <div class="checkout-items" id="checkoutItems">
+                                <!-- Checkout items will be loaded here -->
+                            </div>
+                            <div class="checkout-totals">
+                                <div class="total-row">
+                                    <span>Tạm tính:</span>
+                                    <span id="subtotal">0 ₫</span>
+                                </div>
+                                <div class="total-row">
+                                    <span>Phí giao hàng:</span>
+                                    <span>Miễn phí</span>
+                                </div>
+                                <div class="total-row final-total">
+                                    <span>Tổng cộng:</span>
+                                    <span id="finalTotal">0 ₫</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Orders Page Content -->
+        <div id="ordersPage" class="page-content" style="display: none;">
+            <section class="orders-section">
+                <div class="container">
+                    <h2>Đơn hàng của tôi</h2>
+                    <div class="orders-list" id="ordersList">
+                        <!-- Orders will be loaded here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Admin Page Content -->
+        <div id="adminPage" class="page-content" style="display: none;">
+            <section class="admin-section">
+                <div class="container">
+                    <div id="adminContent">
+                        <!-- Admin content will be loaded here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Profile Page Content -->
+        <div id="profilePage" class="page-content" style="display: none;">
+            <section class="profile-section">
+                <div class="container">
+                    <h2>Thông tin cá nhân</h2>
+                    <div id="profileContent">
+                        <!-- Profile content will be loaded here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Order Processing Page -->
+        <div id="order-processingPage" class="page-content" style="display: none; height: 100vh; overflow: hidden;">
+            <div class="order-processing-layout" style="height: 100%; display: flex;">
+                <!-- Sidebar -->
+                <div class="order-sidebar" style="width: 350px; background: #f8f9fa; border-right: 1px solid #ddd; overflow-y: auto;">
+                    <!-- Order Information -->
+                    <div class="sidebar-section">
+                        <h3><i class="fas fa-info-circle"></i> Thông tin đơn hàng</h3>
+                        <div id="orderInfoDetails">
+                            <!-- Order details will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Drone Selection -->
+                    <div class="sidebar-section">
+                        <h3><i class="fas fa-drone"></i> Chọn Drone</h3>
+                        <div id="droneSelectionList">
+                            <!-- Drone list will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Flight Status -->
+                    <div class="sidebar-section">
+                        <h3><i class="fas fa-plane"></i> Trạng thái bay</h3>
+                        <div class="flight-status">
+                            <div class="status-indicator idle" id="flightStatus">Chờ khởi hành</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="flightProgress" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-text" id="progressText">0%</div>
+                        </div>
+                    </div>
+
+                    <!-- Flight Controls -->
+                    <div class="sidebar-section">
+                        <h3><i class="fas fa-gamepad"></i> Điều khiển bay</h3>
+                        <div class="flight-controls">
+                            <button class="btn btn-success start-btn" onclick="startFlight()" disabled>
+                                <i class="fas fa-play"></i> Khởi hành
+                            </button>
+                            <button class="btn btn-warning pause-btn" onclick="pauseFlight()" disabled>
+                                <i class="fas fa-pause"></i> Tạm dừng
+                            </button>
+                            <button class="btn btn-info continue-btn" onclick="continueFlight()" disabled>
+                                <i class="fas fa-play"></i> Tiếp tục
+                            </button>
+                            <button class="btn btn-danger emergency-btn" onclick="emergencyLanding()" disabled>
+                                <i class="fas fa-exclamation-triangle"></i> Khẩn cấp
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Map Controls -->
+                    <div class="sidebar-section">
+                        <h3><i class="fas fa-map"></i> Điều khiển bản đồ</h3>
+                        <div class="map-controls">
+                            <button class="btn btn-primary map-btn" onclick="toggleRoutePlanning()">
+                                <span id="planningBtnText"><i class="fas fa-route"></i> Lập lại lộ trình</span>
+                            </button>
+                            <button class="btn btn-secondary map-btn" onclick="resetRoute()">
+                                <i class="fas fa-undo"></i> Đặt lại
+                            </button>
+                            <button class="btn btn-success map-btn" onclick="optimizeRoute()" disabled>
+                                <i class="fas fa-magic"></i> Tối ưu hóa
+                            </button>
+                        </div>
+                        <div id="route-instructions" style="display: none;">
+                            <p><small>Click trên bản đồ để thêm điểm dừng vào lộ trình</small></p>
+                        </div>
+                    </div>
+
+                    <!-- Completion -->
+                    <div class="sidebar-section">
+                        <button class="btn btn-success confirm-delivery-btn" onclick="confirmDeliveryFromPage()" disabled>
+                            <i class="fas fa-check-circle"></i> Chờ hoàn thành
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Map Area -->
+                <div class="order-main-content" style="flex: 1; position: relative;">
+                    <div class="map-container-full" style="width: 100%; height: 100%;">
+                        <div id="orderProcessingMap" style="width: 100%; height: 100%; min-height: 500px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Đăng nhập</h2>
+                <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            </div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mật khẩu:</label>
+                    <input type="password" id="loginPassword" name="password" required>
+                </div>
+                <button type="submit" class="btn-primary">Đăng nhập</button>
+                <p class="demo-accounts">
+                    <strong>Tài khoản demo:</strong><br>
+                    Admin: admin@demo.com / admin123<br>
+                    User: user@demo.com / user123
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Đăng ký</h2>
+                <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            </div>
+            <form id="registerForm" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="registerName">Họ và tên:</label>
+                    <input type="text" id="registerName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email:</label>
+                    <input type="email" id="registerEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Mật khẩu:</label>
+                    <input type="password" id="registerPassword" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Xác nhận mật khẩu:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn-primary">Đăng ký</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    
+    <!-- Navigation Emergency Fix -->
+    <script src="../../../navigation-fix.js"></script>
+    
+    <script src="../js/main.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cart.js"></script>
+    
+    <script>
+        // Initialize the application when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== DOMContentLoaded triggered ===');
+            console.log('Current page before init:', window.currentPage || 'undefined');
+            
+            // Force ensure we're on home page
+            window.currentPage = 'home';
+            
+            // Initialize homepage immediately
+            console.log('Calling showPage(home)');
+            showPage('home');
+            
+            // Additional force show as backup
+            setTimeout(() => {
+                console.log('=== BACKUP FORCE SHOW ===');
+                const heroSection = document.querySelector('.hero');
+                const featuresSection = document.querySelector('.features'); 
+                const featuredProductsSection = document.querySelector('.featured-products');
+                
+                if (heroSection) {
+                    heroSection.style.display = 'flex';
+                    heroSection.style.visibility = 'visible';
+                    heroSection.style.opacity = '1';
+                    console.log('BACKUP: Hero forced visible');
+                }
+                if (featuresSection) {
+                    featuresSection.style.display = 'block';
+                    featuresSection.style.visibility = 'visible'; 
+                    featuresSection.style.opacity = '1';
+                    console.log('BACKUP: Features forced visible');
+                }
+                if (featuredProductsSection) {
+                    featuredProductsSection.style.display = 'block';
+                    featuredProductsSection.style.visibility = 'visible';
+                    featuredProductsSection.style.opacity = '1'; 
+                    console.log('BACKUP: Featured products forced visible');
+                }
+            }, 500);
+            
+            // Force show homepage sections immediately as initial backup
+            const heroSection = document.querySelector('.hero');
+            const featuresSection = document.querySelector('.features');
+            const featuredProductsSection = document.querySelector('.featured-products');
+            
+            if (heroSection) {
+                heroSection.style.display = 'flex';
+                heroSection.style.visibility = 'visible';
+                heroSection.style.opacity = '1';
+                console.log('Hero forced visible');
+            }
+            if (featuresSection) {
+                featuresSection.style.display = 'block';
+                featuresSection.style.visibility = 'visible';
+                featuresSection.style.opacity = '1';
+                console.log('Features forced visible');
+            }
+            if (featuredProductsSection) {
+                featuredProductsSection.style.display = 'block';
+                featuredProductsSection.style.visibility = 'visible';
+                featuredProductsSection.style.opacity = '1';
+                console.log('Featured products forced visible');
+            }
+            
+            // Initialize functions if available
+            try {
+                if (typeof createDemoOrders === 'function') {
+                    createDemoOrders();
+                }
+                
+                if (typeof updateAuthUI === 'function') {
+                    updateAuthUI();
+                }
+                
+                if (typeof updateCartCount === 'function') {
+                    updateCartCount();
+                }
+                
+                // Show homepage first, this will handle all display logic
+                if (typeof showPage === 'function') {
+                    showPage('home');
+                } else {
+                    // Fallback if showPage not available yet
+                    const homePage = document.getElementById('homePage');
+                    if (homePage) {
+                        homePage.style.display = 'block';
+                        homePage.style.visibility = 'visible';
+                        console.log('Homepage set to visible (fallback)');
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error during initialization:', error);
+                // Emergency fallback
+                const homePage = document.getElementById('homePage');
+                if (homePage) {
+                    homePage.style.display = 'block';
+                }
+            }
+            
+            console.log('=== Initialization complete ===');
+        });
+    </script>
+</body>
+</html>

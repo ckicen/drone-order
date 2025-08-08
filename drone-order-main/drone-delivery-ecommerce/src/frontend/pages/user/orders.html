@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn Hàng Của Tôi</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/cart.css">
+</head>
+<body>
+    <header>
+        <h1>Đơn Hàng Của Tôi</h1>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Trang chính</a></li>
+                <li><a href="../products.html">Sản phẩm</a></li>
+                <li><a href="../drones.html">Drone</a></li>
+                <li><a href="../profile.html">Hồ sơ</a></li>
+                <li><a href="../login.html">Đăng nhập</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="order-history">
+            <h2>Lịch sử đơn hàng</h2>
+            <div id="ordersList">
+                <!-- Danh sách đơn hàng sẽ được tải ở đây -->
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 Hệ thống Quản lý Drone. Tất cả quyền được bảo lưu.</p>
+    </footer>
+    <script src="../../js/main.js"></script>
+    <script src="../../js/cart.js"></script>
+    <script>
+        // Hàm để tải lịch sử đơn hàng
+        function loadOrderHistory() {
+            // Gọi API để lấy danh sách đơn hàng của người dùng
+            fetch('/api/orders')
+                .then(response => response.json())
+                .then(data => {
+                    const ordersList = document.getElementById('ordersList');
+                    ordersList.innerHTML = '';
+                    data.forEach(order => {
+                        const orderItem = document.createElement('div');
+                        orderItem.className = 'order-item';
+                        orderItem.innerHTML = `
+                            <h3>Đơn hàng #${order.id}</h3>
+                            <p>Ngày đặt: ${new Date(order.date).toLocaleDateString()}</p>
+                            <p>Tổng tiền: ${order.total} VNĐ</p>
+                            <p>Trạng thái: ${order.status}</p>
+                        `;
+                        ordersList.appendChild(orderItem);
+                    });
+                })
+                .catch(error => console.error('Error loading orders:', error));
+        }
+
+        // Tải lịch sử đơn hàng khi trang được tải
+        document.addEventListener('DOMContentLoaded', loadOrderHistory);
+    </script>
+</body>
+</html>

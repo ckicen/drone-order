@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Drone - Hệ thống Giao hàng</title>
+    <link rel="stylesheet" href="../../css/admin.css">
+    <link rel="stylesheet" href="../../css/map.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../../js/map.js" defer></script>
+    <script src="../../js/admin/drone-control.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Quản lý Drone</h1>
+        <nav>
+            <ul>
+                <li><a href="../dashboard.html">Dashboard</a></li>
+                <li><a href="../orders.html">Quản lý Đơn hàng</a></li>
+                <li><a href="../users.html">Quản lý Người dùng</a></li>
+                <li><a href="drone-management.html">Quản lý Drone</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="drone-list">
+            <h2>Danh sách Drone</h2>
+            <div id="droneGrid">
+                <!-- Drone cards will be loaded here -->
+            </div>
+        </section>
+        <section id="drone-map">
+            <h2>Đường đi của Drone</h2>
+            <div id="map" style="height: 400px;"></div>
+        </section>
+        <section id="drone-controls">
+            <h2>Điều khiển Drone</h2>
+            <form id="droneControlForm">
+                <label for="droneSelect">Chọn Drone:</label>
+                <select id="droneSelect" required>
+                    <option value="">-- Chọn Drone --</option>
+                    <!-- Options will be populated here -->
+                </select>
+                <label for="targetLat">Vĩ độ đích:</label>
+                <input type="number" id="targetLat" step="0.000001" placeholder="21.0285" required>
+                <label for="targetLng">Kinh độ đích:</label>
+                <input type="number" id="targetLng" step="0.000001" placeholder="105.8542" required>
+                <button type="submit">Gửi đến vị trí</button>
+            </form>
+            <div id="controlMessage"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 Hệ thống Giao hàng bằng Drone. Tất cả quyền được bảo lưu.</p>
+    </footer>
+</body>
+</html>
