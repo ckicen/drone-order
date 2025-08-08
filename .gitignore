@@ -49,3 +49,6 @@ build/
 
 # Cache
 .cache/
+
+# Specific files
+/drone_management_system.html
