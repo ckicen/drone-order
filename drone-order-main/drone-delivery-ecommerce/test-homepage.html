@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Homepage - DroneShop</title>
+    <link rel="stylesheet" href="src/frontend/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-drone"></i>
+                <span>DroneShop</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="#" class="nav-link active">Trang chủ</a></li>
+                    <li><a href="#" class="nav-link">Sản phẩm</a></li>
+                    <li><a href="#" class="nav-link">Drone</a></li>
+                </ul>
+            </nav>
+            
+            <div class="nav-icons">
+                <i class="fas fa-search"></i>
+                <div class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <div id="mainContent">
+        <!-- Home Page Content -->
+        <div id="homePage" class="page-content">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Giao hàng siêu tốc bằng Drone</h1>
+                    <p>Trải nghiệm mua sắm mới với công nghệ giao hàng drone hiện đại. Nhanh chóng, an toàn và tiện lợi.</p>
+                    <div class="hero-buttons">
+                        <a href="#" class="btn-primary">Mua sắm ngay</a>
+                        <a href="#" class="btn-secondary">Xem Drone</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="features">
+                <div class="container">
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <i class="fas fa-shipping-fast"></i>
+                            <h3>Giao hàng nhanh</h3>
+                            <p>Giao hàng trong vòng 30 phút với công nghệ drone hiện đại</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>An toàn tuyệt đối</h3>
+                            <p>Hệ thống bảo mật và giám sát 24/7 đảm bảo hàng hóa an toàn</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <h3>Theo dõi realtime</h3>
+                            <p>Theo dõi vị trí đơn hàng theo thời gian thực trên bản đồ</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // Simple test to see if page loads properly
+        console.log('Test page loaded successfully');
+        console.log('Hero section:', document.querySelector('.hero'));
+        console.log('Hero content:', document.querySelector('.hero-content'));
+    </script>
+</body>
+</html>

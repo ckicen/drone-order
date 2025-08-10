@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test OpenStreetMap API</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        
+        .map-container {
+            width: 100%;
+            height: 500px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        #testMap {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+        }
+        
+        .info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <h1>🗺️ Test OpenStreetMap API</h1>
+    
+    <div class="info">
+        <h3>📍 Thông tin test:</h3>
+        <ul>
+            <li><strong>API:</strong> OpenStreetMap tile server</li>
+            <li><strong>Thư viện:</strong> Leaflet.js v1.9.4</li>
+            <li><strong>Vị trí:</strong> Thành phố Hồ Chí Minh</li>
+            <li><strong>Zoom:</strong> Level 12</li>
+        </ul>
+    </div>
+    
+    <div id="status" class="status">Đang khởi tạo bản đồ...</div>
+    
+    <div class="map-container">
+        <div id="testMap"></div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="addMarker()">📍 Thêm marker</button>
+        <button onclick="goToHanoi()">🏢 Đến Hà Nội</button>
+        <button onclick="goToHCM()">🏙️ Đến TP.HCM</button>
+        <button onclick="goToDaNang()">🏖️ Đến Đà Nẵng</button>
+        <button onclick="testRoute()">🛣️ Test routing</button>
+    </div>
+    
+    <div class="info">
+        <h3>🔍 Kiểm tra:</h3>
+        <ul id="checkList">
+            <li id="leafletLoad">✅ Leaflet.js đã load</li>
+            <li id="mapInit">⏳ Khởi tạo bản đồ...</li>
+            <li id="tilesLoad">⏳ Loading tiles...</li>
+            <li id="interaction">⏳ Test tương tác...</li>
+        </ul>
+    </div>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    
+    <script>
+        let testMap;
+        let markers = [];
+        
+        // Status functions
+        function updateStatus(message, isError = false) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = 'status ' + (isError ? 'error' : 'success');
+        }
+        
+        function updateCheck(id, success, message) {
+            const element = document.getElementById(id);
+            element.innerHTML = (success ? '✅' : '❌') + ' ' + message;
+        }
+        
+        // Initialize map
+        function initMap() {
+            try {
+                updateStatus('Đang khởi tạo bản đồ...');
+                
+                // Check if Leaflet is loaded
+                if (typeof L === 'undefined') {
+                    updateCheck('leafletLoad', false, 'Leaflet.js không load được');
+                    updateStatus('Lỗi: Leaflet.js không load được', true);
+                    return;
+                }
+                
+                updateCheck('leafletLoad', true, 'Leaflet.js đã load');
+                
+                // Create map centered on Ho Chi Minh City
+                testMap = L.map('testMap', {
+                    center: [10.8231, 106.6297],
+                    zoom: 12,
+                    zoomControl: true
+                });
+                
+                updateCheck('mapInit', true, 'Bản đồ đã khởi tạo');
+                
+                // Add OpenStreetMap tiles
+                const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                    maxZoom: 18
+                });
+                
+                tileLayer.addTo(testMap);
+                
+                // Wait for tiles to load
+                tileLayer.on('load', function() {
+                    updateCheck('tilesLoad', true, 'Tiles đã load thành công');
+                    updateStatus('✅ Bản đồ hoạt động tốt!');
+                });
+                
+                tileLayer.on('tileerror', function() {
+                    updateCheck('tilesLoad', false, 'Lỗi loading tiles');
+                    updateStatus('❌ Lỗi loading tiles từ OpenStreetMap', true);
+                });
+                
+                // Add a marker at Ho Chi Minh City
+                const hcmMarker = L.marker([10.8231, 106.6297])
+                    .addTo(testMap)
+                    .bindPopup('<b>Thành phố Hồ Chí Minh</b><br>Trung tâm kinh tế Việt Nam')
+                    .openPopup();
+                
+                markers.push(hcmMarker);
+                
+                // Test interaction
+                testMap.on('click', function(e) {
+                    updateCheck('interaction', true, 'Click interaction hoạt động');
+                    console.log('Map clicked at: ', e.latlng);
+                });
+                
+                // Test zoom
+                testMap.on('zoomend', function() {
+                    console.log('Current zoom: ', testMap.getZoom());
+                });
+                
+                console.log('Map initialized successfully');
+                
+            } catch (error) {
+                console.error('Map initialization error:', error);
+                updateCheck('mapInit', false, 'Lỗi khởi tạo: ' + error.message);
+                updateStatus('❌ Lỗi khởi tạo bản đồ: ' + error.message, true);
+            }
+        }
+        
+        // Control functions
+        function addMarker() {
+            if (!testMap) return;
+            
+            const lat = 10.8231 + (Math.random() - 0.5) * 0.1;
+            const lng = 106.6297 + (Math.random() - 0.5) * 0.1;
+            
+            const marker = L.marker([lat, lng])
+                .addTo(testMap)
+                .bindPopup(`<b>Marker ngẫu nhiên</b><br>Lat: ${lat.toFixed(4)}<br>Lng: ${lng.toFixed(4)}`);
+            
+            markers.push(marker);
+            updateStatus(`✅ Đã thêm marker tại ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+        }
+        
+        function goToHanoi() {
+            if (!testMap) return;
+            testMap.setView([21.0285, 105.8542], 13);
+            updateStatus('📍 Đã chuyển đến Hà Nội');
+        }
+        
+        function goToHCM() {
+            if (!testMap) return;
+            testMap.setView([10.8231, 106.6297], 12);
+            updateStatus('📍 Đã chuyển đến TP.HCM');
+        }
+        
+        function goToDaNang() {
+            if (!testMap) return;
+            testMap.setView([16.0544, 108.2022], 13);
+            updateStatus('📍 Đã chuyển đến Đà Nẵng');
+        }
+        
+        function testRoute() {
+            if (!testMap) return;
+            
+            const start = [10.8231, 106.6297]; // HCM
+            const end = [10.7769, 106.6955];   // Landmark 81
+            
+            // Create a simple polyline route
+            const route = L.polyline([start, end], {
+                color: 'red',
+                weight: 3,
+                opacity: 0.7
+            }).addTo(testMap);
+            
+            // Add markers for start and end
+            L.marker(start).addTo(testMap).bindPopup('🚁 Điểm xuất phát');
+            L.marker(end).addTo(testMap).bindPopup('📦 Điểm giao hàng');
+            
+            // Fit map to show the route
+            testMap.fitBounds(route.getBounds(), {padding: [20, 20]});
+            
+            updateStatus('✅ Đã tạo route test thành công');
+        }
+        
+        // Initialize when page loads
+        window.onload = function() {
+            setTimeout(initMap, 500); // Small delay to ensure DOM is ready
+        };
+    </script>
+</body>
+</html>

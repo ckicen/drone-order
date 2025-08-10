@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Điều Khiển Quản Trị</title>
+    <link rel="stylesheet" href="../../css/admin.css">
+    <link rel="stylesheet" href="../../css/map.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../../js/main.js" defer></script>
+    <script src="../../js/admin/order-management.js" defer></script>
+    <script src="../../js/admin/drone-control.js" defer></script>
+    <script src="../../js/map.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Bảng Điều Khiển Quản Trị</h1>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Trang chính</a></li>
+                <li><a href="../products.html">Sản phẩm</a></li>
+                <li><a href="../drones.html">Drone</a></li>
+                <li><a href="../users.html">Người dùng</a></li>
+                <li><a href="../orders.html">Quản lý Đơn hàng</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="order-overview">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2>Quản lý Đơn hàng</h2>
+                <button onclick="clearAllOrders()" style="
+                    background-color: #dc3545;
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 14px;
+                ">
+                    <i class="fas fa-trash"></i> Xóa tất cả đơn hàng
+                </button>
+            </div>
+            <div id="orderList">
+                <!-- Đơn hàng sẽ được tải ở đây -->
+            </div>
+        </section>
+
+        <section id="drone-overview">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2>Quản lý Drone</h2>
+                <button onclick="clearAllDroneStatus()" style="
+                    background-color: #ffc107;
+                    color: #000;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 14px;
+                ">
+                    <i class="fas fa-broom"></i> Clear trạng thái Drone
+                </button>
+            </div>
+            <div id="droneList">
+                <!-- Drone sẽ được tải ở đây -->
+            </div>
+            <div id="mapContainer">
+                <h3>Đường đi của Drone</h3>
+                <div id="map" style="height: 400px;"></div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 Hệ thống Quản lý Drone. Tất cả quyền được bảo lưu.</p>
+    </footer>
+</body>
+</html>

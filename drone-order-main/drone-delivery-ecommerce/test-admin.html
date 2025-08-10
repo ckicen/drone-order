@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Admin Dashboard</title>
+    <link rel="stylesheet" href="src/frontend/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Admin Dashboard</h1>
+        <button onclick="loginAsAdmin()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Login as Admin</button>
+        <div id="adminContent" style="margin-top: 20px;">
+            <!-- Admin content will load here -->
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    
+    <!-- Main JS -->
+    <script src="src/frontend/js/main.js"></script>
+    <script src="src/frontend/js/auth.js"></script>
+
+    <script>
+        // Test login as admin
+        function loginAsAdmin() {
+            // Simulate admin login
+            const adminUser = {
+                email: 'admin@demo.com',
+                role: 'admin',
+                name: 'Admin Demo',
+                id: 'admin123'
+            };
+            
+            localStorage.setItem('currentUser', JSON.stringify(adminUser));
+            
+            // Create some sample orders if none exist
+            const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+            if (existingOrders.length === 0) {
+                const sampleOrders = [
+                    {
+                        id: 'ORD001',
+                        date: new Date().toISOString(),
+                        customer: 'Nguyễn Văn A',
+                        phone: '0123456789',
+                        address: 'Hà Nội',
+                        items: [
+                            { name: 'Sản phẩm 1', quantity: 2, price: 100000 }
+                        ],
+                        total: 200000,
+                        status: 'pending'
+                    },
+                    {
+                        id: 'ORD002',
+                        date: new Date().toISOString(),
+                        customer: 'Trần Thị B',
+                        phone: '0987654321',
+                        address: 'TP.HCM',
+                        items: [
+                            { name: 'Sản phẩm 2', quantity: 1, price: 150000 }
+                        ],
+                        total: 150000,
+                        status: 'processing'
+                    },
+                    {
+                        id: 'ORD003',
+                        date: new Date().toISOString(),
+                        customer: 'Lê Văn C',
+                        phone: '0555123456',
+                        address: 'Đà Nẵng',
+                        items: [
+                            { name: 'Sản phẩm 3', quantity: 3, price: 80000 }
+                        ],
+                        total: 240000,
+                        status: 'delivered'
+                    }
+                ];
+                localStorage.setItem('orders', JSON.stringify(sampleOrders));
+            }
+            
+            // Load admin content
+            const contentDiv = document.getElementById('adminContent');
+            if (typeof loadAdminContent === 'function') {
+                loadAdminContent();
+                console.log('Admin content loaded successfully!');
+            } else {
+                contentDiv.innerHTML = '<p style="color: red;">Error: loadAdminContent function not available</p>';
+                console.error('loadAdminContent function not available');
+            }
+        }
+        
+        // Auto-login for testing
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                loginAsAdmin();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
